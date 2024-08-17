@@ -1,0 +1,390 @@
+import pandas as pd
+
+people = {
+"name" : ["walk" , "warn" , "tread"],
+"work" : ["poet" , "codeup" , "locklong"],
+"sub" : ["dsa" , "dl" , "gen+rag"]}
+df = pd.DataFrame(people)
+print(df)
+p = df['name']
+print(p)
+print(type(p)) # <class 'pandas.core.series.Series'>
+o = df[['name' , 'work']]
+print(type(o)) # <class 'pandas.core.frame.DataFrame'>
+print(df.head())
+df.columns # to get columns
+# we can also access the columns uding the dot notation
+print(df.columns)
+
+# to get rows, we have loc and iloc(integer location)
+
+q = df.iloc[0]
+print(q) 
+print("lovers")
+
+r = df.iloc[[0,1]]
+print(r)
+p = df.iloc[[0,1] , 2]
+# second arguments is for columns
+print("p : ", p )
+
+# in loc we will searching by labels
+# since rows labels are integer
+g = df.loc[[0,1] , "sub"] #in rows numbers are the label 
+print(g)
+j = df.loc[[0,1], ["sub" , "name"]]
+print(j)
+file_path = "C:\\Users\\Acer\\Downloads\\stack-overflow-developer-survey-2023\survey_results_public.csv"
+fg = pd.read_csv(file_path , )
+print("\n")
+print("\n")
+filepath = "C:\\Users\\Acer\\Downloads\\stack-overflow-developer-survey-2023\\survey_results_schema.csv"
+schema_df = pd.read_csv(filepath , index_col="qname") 
+print("fg :\n" , fg)
+l = fg.columns
+
+print(l[1:])
+print(fg["DatabaseHaveWorkedWith"].value_counts())
+
+""" part 4
+Filtering"""
+
+print(df)
+v = df['work'] == "poet"
+
+print(v)
+
+print(df[v]) # returns value of True
+g = df.loc[v] # same as above
+print("g :" , g)
+# & = and , | = or
+# we can use comparsion also
+j = (df["work"] == "poet") & (df["sub"] == "dsa")
+print("j : \n" , j)
+
+# ~ = opposite (it will opp of it )
+print("~v \n" , ~v)
+f = df.loc[~v]
+# we can pass multiple arguements in f like this
+# f = df.loc[~v , "string_object1" , "string_obj2"]
+print(f)
+# slicing 
+t = fg.loc[0:100]
+print(t.head(100))
+u = fg.loc[1: , "ResponseId":"CompTotal"] # last value is inclusvise
+print(u) # first argument in loc is for rows and second argument is for columns
+k = fg.loc[1:1000 , ["ResponseId" ,"CompTotal" , "ConvertedCompYearly"]]
+print(k) # we can pass the list of the columns which we want in loc
+
+high_salary = (fg["ConvertedCompYearly"] > 70000 ,) # using the comparsion
+print(high_salary) # output is bool
+y = fg.loc[high_salary] # <class 'core.pandas.frame.DataFrame'>
+print(y)
+print(y.head(10))
+
+""" now , if we want to see few countries have high salaries
+then we can do this """
+countries = [" United States" , "India" , "United Kingdom" ,"Germany"]
+filt = fg['Country'].isin(countries) # taking the dataseries of the country
+# using the isin method to do it
+print("filt\n" , filt) # bool
+
+#q = fg.loc[high_salary,["Country" , "LanguageHaveWorkedWith" , "ProfessionalTech" , "Industry","ConvertedCompYearly"]] error
+#q = fg.loc[high_salary, ["Country", "LanguageHaveWorkedWith", "ProfessionalTech", "Industry", "ConvertedCompYearly"]] error
+#print(q)
+
+"""setting the index"""
+df.set_index("name" , inplace=True)
+df.index
+df.reset_index(inplace=True)
+# to reverse the chnages
+print("schemna_df\n", schema_df.head(40))
+# sorting
+schema_df.sort_index( ascending= False ,inplace=True) # to sort in descending order
+print(schema_df)  
+
+
+#pd.set_option('display.max_columns', 85)
+#pd.set_option('display.max_rows', 85)
+""" imp """
+filt1 = fg['LanguageHaveWorkedWith'].str.contains('Python', na=False) # na deals with Nan
+#print(filt1) #return the bool
+print("return the data where python is present\n")
+print(fg.loc[filt1]) # return the data where python is present
+# when we use fg.loc[filt1] it gives values corresponding to True
+print(fg.loc[filt1].columns) # gives the shape
+ # prints the all columns
+print(type(fg.loc[filt1])) # <class 'pandas.core.frame.DataFrame'>
+print(fg.loc[filt1].shape) # (number of rows , number of columns)
+
+"""
+      python debugger 
+
+"""
+import pdb
+#  pdb.set_trace() # it will stop the execution at this point and we can debug the code
+# using the multiple filter simultanously
+print(fg.loc[filt1]['ConvertedCompYearly'][filt])
+
+""" Part 5
+Manipulation on rows and columns
+"""
+# RENNAM the coumns
+df.columns = [ "name less" , " work cup" , "soc cor"]
+
+df.columns = [x.upper() for x in df.columns]
+# upper case all the column names
+print(df)
+
+
+df.columns = df.columns.str.replace(" "  , "- " ,)
+print(df)
+# in case , if we want to change some columns
+df.rename( index = {"0" : "aplha" , "1" : " beta" , "2" : " gamma"} , columns= {"NAME LESS" : "gni - ir" , "WORK CUP" : "ond opl" , "SOC COR" : "qw lmn"} , )
+print(df)
+
+
+""" changes in rows"""
+""" if we already have df.loc[3] then it will replace it
+if not then it will add a new row"""
+print("\n")
+df.loc[3] = ["quint" , "cluster" , "llms"]
+print(df)
+
+# specifying specify changes in the row 
+df.loc[ 3, ["NAME- LESS"]] = "nigth"
+print(df)
+
+# by using the above code , we add new columns also 
+df.loc[3 , "NEW-COLUMN"] = "NEW-VALUE"
+print("we add new columns also \n")
+print(df)
+
+# when we have set a single , use at
+df.at[3 , "NAME- LESS"] = "night"
+print("\n")
+fir =  (df['NEW-COLUMN'] == "NEW-VALUE")
+# df[fir]["NEW-COLUMN"]) = "FMDMDFVK" 
+# improper assignment
+
+df.columns = df.columns.str.lower()
+"""
+apply
+map
+applymap have been deprcated
+replace
+"""
+df.drop(columns=["new-column"] , inplace= True)
+print(df)
+# df is dataframe comprised of DataSeries
+print(df.apply(len , axis = "columns")) # axis = "rows" is a default
+# it applying len on DataSeries
+# df["column_name"] is DataSeries , it will apply len on the elements of that columns
+print(type(df["name- less"].apply(len))) 
+
+print(df.apply(pd.Series.min))# giving error but works in cmd 
+# because there was a column containing NaN  
+# since NaN is not defined in pandas
+#          
+print("\n")
+#qw = df.apply(lambda x : x.min()) 
+print(df.map(len))
+df.map(str.lower)
+# since there would error if there were numerical data
+# we can't run str method on number
+
+print(df["soc- cor"].map({"dsa" : "scipy" , "dl" : "sns"} , ))
+# remaining by default are filled with NaN
+print(df )
+df["soc- cor"] =df["soc- cor"].replace({"dsa" : "scipy" , "dl" : "sns"})
+print(df["soc- cor"])
+
+# combing the first and second column into another column
+df["long"] = df["name- less"]+" "+ df["- work- cup"]
+
+# for removing columns we can use drop method
+df.drop(columns=["name- less"] , inplace=True)
+
+print("\n")
+
+df.rename(columns={"- work- cup": "flind"} , inplace=True )
+print(df)
+
+df["long"].str.split(" " ,  expand=True)
+df[["low " , "higf"]] = df["long"].str.split(" " ,  expand=True)
+print("\n")
+print(df)
+
+print("\n")
+
+df.drop(index= df[df["higf"]=="codeup"].index , inplace=True , )
+print(df)
+
+
+"""
+ sorting
+"""
+df.sort_values(by = "flind" ,ascending= False, inplace=True)
+#  in case if get duplicate , then have to pass
+# list of columns to sort by like this by =["flind" , "long"]
+df.sort_index()
+
+print(fg[["Country" , "ConvertedCompYearly"]].head(50))
+
+print(fg.sort_values(by = ["Country" , "ConvertedCompYearly"] , ascending=False , ))
+
+print(fg["ConvertedCompYearly"].nlargest(15))
+
+print(fg["ConvertedCompYearly"].nsmallest(5))
+print("\n")
+#print(df.nlargest[10 , "ConvertedCompYearly"])
+"""
+TypeError: 'method' object is not subscriptable
+he error "method object is not subscriptable" typically occurs when you mistakenly try
+to use square brackets [] with a method instead of calling the method. This can happen,
+for example, if you forget to include parentheses () when calling a method
+"""
+print(fg.nlargest(10 , "ConvertedCompYearly"))
+
+"""
+
+Groupby and Aggregation
+
+"""
+print("\n")
+print("Groupby and Aggregation\n")
+print("\n")
+print(fg["ConvertedCompYearly"].describe())
+print(fg.describe() )
+# count is the number of non NaN value
+print(fg.columns)
+print("\n")
+print(fg["EdLevel"].value_counts())
+print("\n")
+print(fg["EdLevel"].value_counts(normalize=True))
+
+print(fg["Country"].value_counts())
+print("\n")
+
+print(fg.groupby(["Country"]))
+# The DataFrame is split into groups based on the 'Country' column.
+# <pandas.core.groupby.generic.DataFrameGroupBy object at 0x000001B071075BE0>
+country_grp = fg.groupby(["Country"])
+""" When grouping with a length-1 list-like, you will need to pass a length-1
+tuple to get_group in a future version of pandas. Pass `(name,)` instead of `name`
+to silence this warning."""
+#print(country_grp.get_group("India"))
+print("print(country_grp.get_group(India))")
+"""
+The method value_counts() is used to count unique occurrences of values in a Series.
+When you use country_grp.get_group(("India",)), it returns a DataFrame, and value_counts() 
+cannot be directly applied to a DataFrame."""
+print(country_grp.get_group(("India",))["EdLevel"].value_counts())
+
+print("\n")
+print("The method value_counts() is used to count unique occurrences of values in a Series. When you use country_grp.get_group((India,)), it returns a DataFrame, and value_counts() cannot be directly applied to a DataFrame")
+# the above thing is equivalent to
+filt_India = fg["Country"] == "India"
+print(fg.loc[filt_India]["EdLevel"].value_counts())
+
+print("\n")
+print("\n")
+print(country_grp["EdLevel"].value_counts(normalize=True).unstack().head(20))
+# .unstack() transforms the multi-index series into a DataFrame for better readability.
+"""
+ when you use value_counts(normalize=True) within a groupby context,
+ 
+ the normalization is applied within each group separately. This means 
+ that the counts are converted to proportions relative to the total count
+ of the 'EdLevel' values within each 'Country'."""
+print("\n")
+
+Indian_EdLevel = country_grp["EdLevel"].value_counts(normalize=True).loc["India"]
+print("Indian_EdLevel\n", Indian_EdLevel)
+"""
+agg method
+t
+"""
+print("\n")
+print("agg method\n")
+
+print(country_grp["EdLevel"].agg(["count", "nunique"]).head(10))
+
+country_grp["ConvertedCompYearly"].agg(["mean" , "median"])
+"""country_grp["ConvertedCompYearly"].agg(["mean" , "median"]).loc["India"])
+this country wise mean , median
+we can specify particular country"""
+# if we want to pass multiple argument ,we do it by using list as shown below
+print(country_grp["ConvertedCompYearly"].agg(["mean" , "median"]).loc[["India" , "Germany"]])
+print("\n")
+print(fg.loc[filt_India]["LanguageHaveWorkedWith"].str.contains("Python"))
+
+# to know how many know python in India who answered the survey
+print(fg.loc[filt_India]["LanguageHaveWorkedWith"].str.contains("Python").sum())
+
+
+# after this we try this how many people in each knows python
+#print(country_grp["LanguageHaveWorkedWith"].str.contains("Python").sum())
+"""AttributeError: 'SeriesGroupBy' object has no attribute 'str'"""
+
+# instead we can use apply
+print(country_grp["LanguageHaveWorkedWith"].apply(lambda x: x.str.contains("Python").sum()))
+print(country_grp["LanguageHaveWorkedWith"].apply(lambda x: x.str.contains("Python").value_counts(normalize = True)))
+
+# to know how many people know python from each country
+country_respondent = fg["Country"].value_counts()
+country_uses_python = (country_grp["LanguageHaveWorkedWith"].apply(lambda x: x.str.contains("Python").sum()))
+
+python_df = pd.concat([country_respondent , country_uses_python] , axis = "columns" , sort=False)
+print("python_df")
+
+python_df.rename(columns={"count" :"Numrespondents" , "LanguageHaveWorkedWith" : "Numknowspython"}, inplace=True)
+
+print("\n")
+print(python_df.columns)
+
+print(python_df)
+# python_df["knowpython"] = (python_df["NumKnowspython"]/python_df["Numrespondents"]) * 100
+ 
+""" Cleaning data"""
+print("Cleaning data\n")
+import numpy as np
+
+ple = {
+    'first': ['Corey', 'Jane', 'John', 'Chris', np.nan, None, 'NA'], 
+    'last': ['Schafer', 'Doe', 'Doe', 'Schafer', np.nan, np.nan, 'Missing'], 
+    'email': ['CoreyMSchafer@gmail.com', 'JaneDoe@email.com', 'JohnDoe@email.com', None, np.nan, 'Anonymous@email.com', 'NA'],
+    'age': ['33', '55', '63', '36', None, None, 'Missing']
+}
+pl = pd.DataFrame(ple)
+print(pl)
+
+print(pl.dropna())
+# writing the default arguments
+pl.dropna(axis = "index" , how = "any" , )
+# how arguments takes "any"  and "all"
+# in "any" anyone of is NaN it remove the row
+# in "all" all of them should NaN
+
+# removing from email column
+pl.dropna(axis ="index" , how = "any" , subset= ["email"])
+
+
+# how deal with custom missing value
+pl.replace("NA" , np.nan , inplace=True)
+pl.replace("Missing" , np.nan , inplace=True)
+
+# now we can use dropna
+print(pl.isna())
+
+
+pl.fillna('miss')
+print(pl.dtypes)
+
+pl["age"] =pl["age"].astype(float)
+# gives error we have nan value
+# we 
+
+
+
+
